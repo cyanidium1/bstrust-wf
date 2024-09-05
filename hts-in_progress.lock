@@ -1,0 +1,5 @@
+Mirror in progress since Wed, 04 Sep 2024 06:45:33 .. please wait!
+winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "HTTrack Website Copier/3.0x (offline browser; web mirror utility)" -%F  -%l "en, *" https://www.bstrust369.com -O1 ""C:\My Web Sites\BS"" +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar +*.gif +*.jpg +*.jpeg +*.png +*.tif +*.bmp +*.webp + *.svg + *.js 
+To pause the engine: create an empty file named 'hts-stop.lock'
+PID=24708
+START=1725425133

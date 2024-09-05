@@ -1,0 +1,8 @@
+-qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "HTTrack Website Copier/3.0x (offline browser; web mirror utility)" -%F "" -%l "en, *" https://www.bstrust369.com -O1 "C:\My Web Sites\BS" +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar +*.gif +*.jpg +*.jpeg +*.png +*.tif +*.bmp +*.webp + *.svg + *.js
+File generated automatically on Wed, 04 Sep 2024 06:45:33, do NOT edit
+
+To update a mirror, just launch httrack without any parameters
+The existing cache will be used (and modified)
+To have other options, retype all parameters and launch HTTrack
+To continue an interrupted mirror, just launch httrack without any parameters
+
