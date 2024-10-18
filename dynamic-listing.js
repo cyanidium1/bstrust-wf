@@ -1,11 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const slug = urlParams.get('slug');
-  fetch('https://graphql.datocms.com/', {
-    method: 'POST',
+  const slug = urlParams.get("slug");
+  fetch("https://graphql.datocms.com/", {
+    method: "POST",
     headers: {
-      Authorization: 'Bearer 0702bd476a5868df17f9eb47ae194a',
-      'Content-Type': 'application/json',
+      Authorization: "Bearer 0702bd476a5868df17f9eb47ae194a",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       query: `{
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saleorrent
         typeofobj
         city
-        description
+        description(markdown: true)
         allphotos {
           url
         }
@@ -35,21 +35,21 @@ document.addEventListener('DOMContentLoaded', () => {
   })
     .then((res) => res.json())
     .then((data) => {
-      const detailContainer = document.getElementById('listing-detail');
-      const detailContainerTwo = document.getElementById('detailContainerTwo');
+      const detailContainer = document.getElementById("listing-detail");
+      const detailContainerTwo = document.getElementById("detailContainerTwo");
       const item = data.data.allObjects[0];
 
       detailContainer.innerHTML = `
                    <div class="container">
         <div class="current-listing-wrapper">
           <div class="listing-menu-wrapper">
-            <a href="./index.html" class="listing-menu-link deep-cove"
+            <a href="https://bstrust369.com/index.html" class="listing-menu-link deep-cove"
               >Главная /</a
             ><a
-              href="./locations/durres.html"
+              href="https://bstrust369.com/catalog.html"
               class="listing-menu-link deep-cove"
               >Дуррес /</a
-            ><a href="./types/rent.html" class="listing-menu-link deep-cove"
+            ><a href="https://bstrust369.com/catalog.html" class="listing-menu-link deep-cove"
               >Продажа</a
             >
           </div>
@@ -57,7 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
            ${item?.title}
           </h3>
           <div class="listing-images-wrapper">
-            <a href="${item?.mainphoto.url}" data-fancybox="gallery" class="lightbox-link w-inline-block w-lightbox"
+            <a href="${
+              item?.mainphoto.url
+            }" data-fancybox="gallery" class="lightbox-link w-inline-block w-lightbox"
               ><img
                 alt=""
                 loading="lazy"
@@ -82,9 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   />
                 </a>
               </div>
-            `,
+            `
                )
-               .join('')}   
+               .join("")}   
  
               
               </div>
@@ -119,9 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     alt=""
                     class="listing-detail-image"
                   />
-                  <div class="listing-detail-text deep-cove">${
-                    item.bathrooms
-                  }</div>
+                  <div class="listing-detail-text deep-cove">${item.bathrooms}</div>
                 </div>
                 <div class="listing-detail"
                 style="
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="listing-side-bar-form w-form">
               <form
-                id="wf-form-form-of-house-2"
+                id="wf-form-form-of-house-21"
                 name="wf-form-form-of-house-2"
                 data-name="form of house"
                 method="post"
@@ -293,5 +293,5 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
     })
 
-    .catch((error) => console.error('Error:', error));
+    .catch((error) => console.error("Error:", error));
 });
