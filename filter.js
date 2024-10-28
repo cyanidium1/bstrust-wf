@@ -1,22 +1,23 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   let allProperties = [];
-  const listingsContainer = document.querySelector(".recent-all-listings-grid");
-  const noElementsText = document.querySelector(".non_elements_wrapper"); // блок, который нужно показать или скрыть
+  let currentFilteredProperties = [];
+  const listingsContainer = document.querySelector('.recent-all-listings-grid');
+  const noElementsText = document.querySelector('.non_elements_wrapper'); // блок, который нужно показать или скрыть
   const showMoreButton = document.querySelector('[data-action="show-more"]'); // кнопка "Показать еще"
-  const clearFilterButton = document.querySelector(".btn-clear");
+  const clearFilterButton = document.querySelector('.btn-clear');
   const pageSize = 4; // Количество объектов, которые нужно загружать за раз
   let currentPage = 0; // Текущая страница
   let totalLoaded = 0;
 
-  fetch("https://graphql.datocms.com/", {
-    method: "POST",
+  fetch('https://graphql.datocms.com/', {
+    method: 'POST',
     headers: {
-      Authorization: "Bearer 0702bd476a5868df17f9eb47ae194a",
-      "Content-Type": "application/json",
+      Authorization: 'Bearer 0702bd476a5868df17f9eb47ae194a',
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       query: `{
-      allObjects(orderBy: _firstPublishedAt_DESC) {
+      allObjects {
         id
         title
         _status
@@ -39,11 +40,12 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((res) => res.json())
     .then((data) => {
       allProperties = data.data.allObjects;
-      displayResults(allProperties, listingsContainer, currentPage);
+      currentFilteredProperties = allProperties;
+      displayResults(currentFilteredProperties, listingsContainer, currentPage);
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => console.error('Error:', error));
 
-  const filterForm = document.getElementById("email-form-2");
+  const filterForm = document.getElementById('email-form-2');
 
   function displayResults(properties, container, page) {
     const start = page * pageSize;
@@ -52,12 +54,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Проверяем, есть ли объекты после фильтрации
     if (paginatedProperties.length === 0) {
-      noElementsText.style.display = "block"; // показываем текст "Нету элементов"
-      showMoreButton.style.display = "none"; // скрываем кнопку "Показать еще"
+      noElementsText.style.display = 'block'; // показываем текст "Нету элементов"
+      showMoreButton.style.display = 'none'; // скрываем кнопку "Показать еще"
       return;
     } else {
-      noElementsText.style.display = "none"; // скрываем текст
-      showMoreButton.style.display = "block"; // показываем кнопку
+      noElementsText.style.display = 'none'; // скрываем текст
+      showMoreButton.style.display = 'block'; // показываем кнопку
     }
 
     paginatedProperties.forEach((property) => {
@@ -67,70 +69,61 @@ document.addEventListener("DOMContentLoaded", () => {
     totalLoaded += paginatedProperties.length;
 
     if (totalLoaded >= properties.length) {
-      showMoreButton.style.display = "none"; // Скрываем кнопку, если больше объектов нет
+      showMoreButton.style.display = 'none'; // Скрываем кнопку, если больше объектов нет
     } else {
-      showMoreButton.style.display = "block"; // Если объекты есть, показываем кнопку
+      showMoreButton.style.display = 'block'; // Если объекты есть, показываем кнопку
     }
   }
 
-  // Обработчик события на кнопку "Показать еще"
-  showMoreButton.addEventListener("click", () => {
-    currentPage++; // Увеличиваем текущую страницу
-    displayResults(allProperties, listingsContainer, currentPage);
-  });
-
   function filterProperties() {
-    // Получаем выбранные города
+    // Получаем выбранные значения фильтра и отфильтровываем массив
     const selectedCities = Array.from(
-      filterForm.querySelectorAll('input[data-group="cities"]:checked')
+      filterForm.querySelectorAll('input[data-group="cities"]:checked'),
     ).map((cb) => cb.value);
-
-    // Получаем выбранный тип объекта
     const selectedObjectType = filterForm.querySelector(
-      'input[data-group="objectType"]:checked'
+      'input[data-group="objectType"]:checked',
+    )?.value;
+    const selectedSaleOrRent = filterForm.querySelector(
+      'input[data-group="saleOrRent"]:checked',
     )?.value;
 
-    // Получаем выбранные типы (Продажа/Аренда)
-    const selectedTypes = Array.from(
-      filterForm.querySelectorAll('input[data-group="type"]:checked')
-    ).map((cb) => cb.value);
-
-    const filteredProperties = allProperties.filter((property) => {
+    currentFilteredProperties = allProperties.filter((property) => {
       const cityMatch =
         selectedCities.length === 0 ||
         selectedCities.includes(property.city[0]);
 
-      // Проверяем соответствие по типу объекта (не чувствительно к регистру)
       const objectTypeMatch =
         !selectedObjectType ||
         property.typeofobj
           .map((obj) => obj.toLowerCase().trim())
           .includes(selectedObjectType.toLowerCase().trim());
 
-      // Фильтрация по типам (Продажа/Аренда)
-      const typeMatch =
-        selectedTypes.length === 0 ||
-        selectedTypes.some((type) => property.saleorrent.includes(type));
+      const saleOrRentMatch =
+        !selectedSaleOrRent || property.saleorrent.includes(selectedSaleOrRent);
 
-      return cityMatch && objectTypeMatch && typeMatch;
+      return cityMatch && objectTypeMatch && saleOrRentMatch;
     });
 
-    // Сбрасываем состояние пагинации
+    // Сброс пагинации и отображение отфильтрованных данных
     currentPage = 0;
-    totalLoaded = 0; // Сбрасываем загруженные элементы
-    listingsContainer.innerHTML = ""; // Очищаем контейнер с результатами
-    displayResults(filteredProperties, listingsContainer, currentPage);
+    totalLoaded = 0;
+    listingsContainer.innerHTML = '';
+    displayResults(currentFilteredProperties, listingsContainer, currentPage);
   }
 
+  // Обработчик события на кнопку "Показать еще"
+  showMoreButton.addEventListener('click', () => {
+    currentPage++;
+    displayResults(currentFilteredProperties, listingsContainer, currentPage);
+  });
+
   function createListingElement(item, container) {
-    const listing = document.createElement("div");
-    listing.classList.add("w-dyn-item");
-    listing.role = "listitem";
+    const listing = document.createElement('div');
+    listing.classList.add('w-dyn-item');
+    listing.role = 'listitem';
 
     listing.innerHTML = `
-      <a href="listing.html?slug=${
-        item.slug
-      }" data-w-id="5074cdb3-2e5a-e0fa-1193-8ced74df4c38" class="listing-wrapper w-inline-block">
+      <a href="listing.html?slug=${item.slug}" data-w-id="5074cdb3-2e5a-e0fa-1193-8ced74df4c38" class="listing-wrapper w-inline-block">
             <div
                     style="
                       -webkit-transform: translate3d(0, 19rem, 0)
@@ -146,9 +139,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     class="listing-text"
                   >
               <h5 class="heading-3">${item.title}</h5>
+              <div class="large-text bold">B&amp;S Trust 369</div>
               <div class="text-for-object-filter">Квартира</div>
               <div class="text-block-89">${
-                item.saleorrent[0] === "sale" ? "Продажа" : "Аренда"
+                item.saleorrent[0] === 'sale' ? 'Продажа' : 'Аренда'
               }</div>
             </div>
             <div style="
@@ -224,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <div class="large-text">${item.city[0]}</div>
             </div>
             <img src="${
-              item.mainphoto ? item.mainphoto.url : "#"
+              item.mainphoto ? item.mainphoto.url : '#'
             }" class="listing-image" alt="Listing Image" />
             <div
                     style="
@@ -246,45 +240,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
     container.appendChild(listing);
 
-    const listingWrapper = listing.querySelector(".listing-wrapper");
-    listingWrapper.addEventListener("mouseover", () => {
+    const listingWrapper = listing.querySelector('.listing-wrapper');
+    listingWrapper.addEventListener('mouseover', () => {
       listingWrapper
         .querySelectorAll('[style*="translate3d"]')
         .forEach((el) => {
-          el.style.transform = "translate3d(0, 0, 0)";
+          el.style.transform = 'translate3d(0, 0, 0)';
         });
     });
 
-    listingWrapper.addEventListener("mouseout", () => {
+    listingWrapper.addEventListener('mouseout', () => {
       listingWrapper
         .querySelectorAll('[style*="translate3d"]')
         .forEach((el) => {
-          el.style.transform = el.style.transform.includes("25rem")
-            ? "translate3d(0, 25rem, 0)"
-            : "translate3d(0, 19rem, 0)";
+          el.style.transform = el.style.transform.includes('25rem')
+            ? 'translate3d(0, 25rem, 0)'
+            : 'translate3d(0, 19rem, 0)';
         });
     });
   }
 
   // Обработчик события на кнопку "Сбросить фильтр"
-  clearFilterButton.addEventListener("click", (e) => {
+  clearFilterButton.addEventListener('click', (e) => {
     e.preventDefault();
 
-    // Сбрасываем все фильтры
+    // Сбрасываем все фильтры формы
     filterForm.reset();
 
     // Сбрасываем текущую страницу
     currentPage = 0;
 
     // Очищаем контейнер
-    listingsContainer.innerHTML = "";
+    listingsContainer.innerHTML = '';
 
-    showMoreButton.style.display = "block";
+    // Сбрасываем отображаемые данные до полного списка объектов
+    currentFilteredProperties = allProperties;
 
-    totalLoaded = 0; // Обновляем totalLoaded после фильтрации
+    // Обновляем счетчик totalLoaded
+    totalLoaded = 0;
+
     // Отображаем все объекты
-    displayResults(allProperties, listingsContainer, currentPage);
+    displayResults(currentFilteredProperties, listingsContainer, currentPage);
+
+    // Показываем кнопку "Показать еще"
+    showMoreButton.style.display = 'block';
+
+    // Скрываем текст "Нету элементов" при наличии данных
+    if (currentFilteredProperties.length > 0) {
+      noElementsText.style.display = 'none';
+    }
   });
 
-  filterForm.addEventListener("change", filterProperties);
+  filterForm.addEventListener('change', filterProperties);
 });
