@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     body: JSON.stringify({
       query: `{
-      allObjects {
+      allObjects(first: 50) {
         id
         title
         _status
